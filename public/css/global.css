@@ -1,0 +1,64 @@
+/* 全局屏蔽词/广告过滤标记：只隐藏，不删除原生节点，便于关闭后恢复 */
+html [data-margin-filtered] { display: none !important; }
+/* 搜索结果的列容器也要收起，避免过滤后留下空格。 */
+html .video-list > [class*="col_"]:has(> .bili-video-card[data-margin-filtered="native"]) { display: none !important; }
+
+/* 广告过滤：统一注册在这里，html.margin-ads-hide 由设置开关同步。
+   只使用 B 站明确的容器类名，避免误伤正常内容。 */
+html.margin-ads-hide .ad-report,
+html.margin-ads-hide .slide-ad-exp,
+html.margin-ads-hide .video-card-ad-small,
+html.margin-ads-hide .ad-floor-exp,
+html.margin-ads-hide #slide_ad,
+html.margin-ads-hide .pop-live-small-mode,
+html.margin-ads-hide .video-page-game-card-small,
+html.margin-ads-hide .video-page-special-card-small,
+html.margin-ads-hide .activity-m-v1,
+html.margin-ads-hide .reply-notice,
+html.margin-ads-hide .vcd,
+html.margin-ads-hide .brand-ad-list,
+html.margin-ads-hide .activity-game-list,
+html.margin-ads-hide .search-ad-card,
+html.margin-ads-hide .bili-video-card__info--ad,
+html.margin-ads-hide .video-list-item:has(.bili-video-card__info--ad),
+html.margin-ads-hide .video-card:has(.bili-video-card__info--ad),
+html.margin-ads-hide .rank-item:has(.bili-video-card__info--ad),
+html.margin-ads-hide .bangumi-list .ad-report { display: none !important; }
+
+/* 用户主动减少动画：只作用于映间换皮的页面，保留最终静态帧 */
+/* v0.50.1：播放器（含弹幕层）不受影响——滚动弹幕靠 CSS 动画/过渡移动，被压成 0.001ms 后一出现就到终点，只剩顶部/底部固定弹幕（GitHub #36） */
+html.margin-skin:is(.margin-reduce,.margin-ui-still) *:not(:is(.bpx-player-container, #bilibili-player, #live-player, .live-player-mounter, .web-player-danmaku) *),
+html.margin-skin:is(.margin-reduce,.margin-ui-still) *:not(:is(.bpx-player-container, #bilibili-player, #live-player, .live-player-mounter, .web-player-danmaku) *)::before,
+html.margin-skin:is(.margin-reduce,.margin-ui-still) *:not(:is(.bpx-player-container, #bilibili-player, #live-player, .live-player-mounter, .web-player-danmaku) *)::after {
+  animation-duration: .001ms !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .001ms !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}
+
+/* 系统减少动态效果：同样作用于换皮页面的原生 DOM */
+@media (prefers-reduced-motion: reduce) {
+  html.margin-skin *:not(:is(.bpx-player-container, #bilibili-player, #live-player, .live-player-mounter, .web-player-danmaku) *),
+  html.margin-skin *:not(:is(.bpx-player-container, #bilibili-player, #live-player, .live-player-mounter, .web-player-danmaku) *)::before,
+  html.margin-skin *:not(:is(.bpx-player-container, #bilibili-player, #live-player, .live-player-mounter, .web-player-danmaku) *)::after {
+    animation-duration: .001ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 弹幕空降：认得出时间点的弹幕加下划线，点一下跳到那个时间（解析在 danmaku-time.ts） */
+/* 弹幕层整体不吃指针事件，这里只把标记过的那几条收回来，没标记的照样穿透给播放器 */
+html.margin-airborne .margin-dm-air,
+html.margin-airborne .margin-dm-air > div,
+html.margin-airborne .margin-dm-air > span {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  pointer-events: auto;
+}
